@@ -84,23 +84,23 @@ const Welcome = ({ navigation }) => {
     };
 
 
-    const getDocument = async () => {
-        try {
-            const documentSnapshot = await firestore()
-                .collection('Users')
-                .doc('3316634761')
-                .get();
+    // const getDocument = async () => {
+    //     try {
+    //         const documentSnapshot = await firestore()
+    //             .collection('Users')
+    //             .doc('3316634761')
+    //             .get();
 
-            console.log('User ID: ', documentSnapshot.id);
-            console.log('User data: ', documentSnapshot.data());
-        } catch (error) {
-            console.log('Error retrieving document:', error);
-        }
-    };
+    //         console.log('User ID: ', documentSnapshot.id);
+    //         console.log('User data: ', documentSnapshot.data());
+    //     } catch (error) {
+    //         console.log('Error retrieving document:', error);
+    //     }
+    // };
 
-    useEffect(() => {
-        getDocument();
-    }, []);
+    // useEffect(() => {
+    //     getDocument();
+    // }, []);
 
     const handleDeleteNumber = () => {
         Alert.alert('Delete Number', 'Are you sure you want to delete the number?', [

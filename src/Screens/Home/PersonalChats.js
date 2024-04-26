@@ -31,6 +31,7 @@ import DocumentPicker from 'react-native-document-picker';
 import { createThumbnail } from 'react-native-create-thumbnail';
 import messaging from '@react-native-firebase/messaging';
 import PushNotification from 'react-native-push-notification';
+import { Swipeable } from 'react-native-gesture-handler';
 
 const PersonalChats = ({ navigation, route }) => {
     const [currentUserRandomNumber, setCurrenrUserRandomNumber] = useState(null);
