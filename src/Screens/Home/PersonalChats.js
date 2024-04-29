@@ -43,6 +43,29 @@ const PersonalChats = ({ navigation, route }) => {
     const [isFullScreen, setIsFullScreen] = useState(false);
     const [selectedVideo, setSelectedVideo] = useState(null);
 
+    const swipeRef = useRef(null);
+    const [swiped, setSwiped] = useState(false);
+    const [swipedMessage, setSwipedMessage] = useState(null);
+    const [swipedMessageId, setSwipedMessageId] = useState(null);
+    const [isTyping, setIsTyping] = useState(false);
+    const [selectedMessageId, setSelectedMessageId] = useState(null);
+
+    // Function to handle long-press on messages
+    const handleLongPress = (messageId) => {
+        setSelectedMessageId(messageId);
+    };
+
+
+    // Function to delete the selected message
+    const deleteSelectedMessage = () => {
+        if (selectedMessageId) {
+            // Filter out the selected message from the messages array
+            const updatedMessages = messages.filter(message => message._id !== selectedMessageId);
+            setMessages(updatedMessages);
+            setSelectedMessageId(null); // Clear the selected message ID
+        }
+    };
+
     const panResponder = useRef(
         PanResponder.create({
             onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
@@ -64,6 +87,12 @@ const PersonalChats = ({ navigation, route }) => {
     const closeFullScreen = () => {
         setIsFullScreen(false);
     };
+
+    const handleTyping = (text) => {
+        // Check if the text input is empty or not
+        setIsTyping(text.length > 0);
+    };
+
 
     const fetchData = async () => {
         try {
@@ -355,6 +384,7 @@ const PersonalChats = ({ navigation, route }) => {
     );
 
     const renderInputToolbar = (props) => {
+        const { swipedMessage, onSendReply } = props;
         return (
             <InputToolbar
                 {...props}
@@ -365,6 +395,18 @@ const PersonalChats = ({ navigation, route }) => {
                 }}
                 primaryStyle={{ justifyContent: 'center' }}
             >
+                {swipedMessage && (
+                    <View style={styles.replyComponent}>
+                        {/* Render the reply component with swiped message text and text input */}
+                        <Composer
+                            text={swipedMessage.text}
+                            onChangeText={(text) => setSwipedMessage({ ...swipedMessage, text })}
+                            placeholder="Type your reply here..."
+                            multiline
+                        />
+                        <Send onPress={() => onSendReply(swipedMessage)} />
+                    </View>
+                )}
                 <Composer
                     {...props}
                     textInputStyle={{
@@ -455,6 +497,8 @@ const PersonalChats = ({ navigation, route }) => {
         // Add debugging logs if needed
         // console.log('Rendering bubble for currentMessage:', currentMessage.image);
 
+
+
         const bubbleStyle = {
             right: {
                 backgroundColor: COLORS.green, // WhatsApp green color for sent messages
@@ -482,22 +526,65 @@ const PersonalChats = ({ navigation, route }) => {
             },
         };
 
-        return (
-            <Bubble
-                {...props}
-                wrapperStyle={bubbleStyle}
-                textStyle={textStyle}
-            >
-                {currentMessage.image && renderMessageImage({ ...props, currentMessage })}
-                {currentMessage.video && renderMessageVideo({ ...props, currentMessage })}
-                {currentMessage.audio && (
-                    <MessageAudio
-                        {...props}
-                        audioStyle={{ width: wp(100) }} // Adjust as needed
-                    />
-                )}
+        const handleSwipe = (messageId) => {
+            if (!swipedMessageId) {
+                // Perform actions when the message is swiped
+                console.log('Message swiped:', messageId, currentMessage.text);
+                setSwipedMessageId(messageId);
+                setSwipedMessage(currentMessage);
+            }
+        };
 
-            </Bubble>
+        const renderLeftActions = (progress, dragX, messageId) => {
+            const trans = dragX.interpolate({
+                inputRange: [0, 100],
+                outputRange: [0, 1],
+                extrapolate: 'clamp',
+            });
+
+            return (
+                <Animated.View
+                    style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        transform: [{ translateX: trans }],
+                    }}
+                >
+                    {/* Add your custom reply icon here */}
+                    <MaterialCommunityIcons name="reply-outline" color={COLORS.darkgray1} size={hp(5)} />
+                </Animated.View>
+            );
+        };
+
+        return (
+            <Swipeable
+                renderLeftActions={(progress, dragX) =>
+                    renderLeftActions(progress, dragX, currentMessage._id, currentMessage)
+                }
+                onSwipeableLeftOpen={() => handleSwipe(currentMessage._id, currentMessage)}
+                onSwipeableClose={() => {
+                    if (swipedMessageId === currentMessage._id) {
+                        // Reset swipedMessageId when the swipe is closed
+                        setSwipedMessageId(null);
+                    }
+                }}
+            >
+                <Bubble
+                    {...props}
+                    wrapperStyle={bubbleStyle}
+                    textStyle={textStyle}
+                >
+                    {currentMessage.image && renderMessageImage({ ...props, currentMessage })}
+                    {currentMessage.video && renderMessageVideo({ ...props, currentMessage })}
+                    {currentMessage.audio && (
+                        <MessageAudio
+                            {...props}
+                            audioStyle={{ width: wp(100) }} // Adjust as needed
+                        />
+                    )}
+
+                </Bubble>
+            </Swipeable>
         );
     };
 
@@ -552,17 +639,24 @@ const PersonalChats = ({ navigation, route }) => {
 
                                     <Text style={{ marginLeft: wp(2), color: COLORS.secondaryWhite, fontFamily: fontFamily.FONTS.regular, fontSize: hp(2.5) }}>{User.name}</Text>
                                 </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <TouchableOpacity style={{ marginRight: wp(5) }}>
-                                        <Ionicons name="videocam" size={22} style={{ color: COLORS.secondaryWhite }} />
+                                {selectedMessageId ? null : ( // Render icons only if no message is selected
+                                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        <TouchableOpacity style={{ marginRight: wp(5) }}>
+                                            <Ionicons name="videocam" size={22} style={{ color: COLORS.secondaryWhite }} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={{ marginRight: wp(5) }} onPress={() => navigation.navigate('VoiceCall', { UserData: User })}>
+                                            <MaterialIcons name="call" size={22} style={{ color: COLORS.secondaryWhite }} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity>
+                                            <Entypo name="dots-three-vertical" size={22} style={{ color: COLORS.secondaryWhite }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                                {selectedMessageId ? ( // Render delete icon only if a message is selected
+                                    <TouchableOpacity onPress={deleteSelectedMessage}>
+                                        <FontAwesome name="trash-o" size={22} color="white" />
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={{ marginRight: wp(5) }} onPress={() => navigation.navigate('VoiceCall', { UserData: User })}>
-                                        <MaterialIcons name="call" size={22} style={{ color: COLORS.secondaryWhite }} />
-                                    </TouchableOpacity>
-                                    <TouchableOpacity>
-                                        <Entypo name="dots-three-vertical" size={22} style={{ color: COLORS.secondaryWhite }} />
-                                    </TouchableOpacity>
-                                </View>
+                                ) : null}
                             </View>
 
 
@@ -625,20 +719,13 @@ const PersonalChats = ({ navigation, route }) => {
                                         </TouchableOpacity>
                                     );
                                 }}
-
-                                renderQuickReplySend={props => {
-                                    return (
-                                        <TouchableOpacity
-                                            style={styles.sendButtonContainer}
-                                            onPress={() => props.onSend({ text: props.text })}
-                                        >
-                                            <Text style={styles.sendButtonText}>Send</Text>
-                                        </TouchableOpacity>
-                                    );
-                                }}
-                                renderAvatar={null}
+                                isTyping={messages.some(message => message.user._id !== currentUserRandomNumber && message.isTyping)}
+                                onInputTextChanged={handleTyping}
                                 scrollToBottom
+                                showAvatarForEveryMessage={true}
                                 renderUsernameOnMessage={true}
+                                onLongPress={handleLongPress}
+                                onMoveShouldSetPanResponderCapture={true}
                                 textInputStyle={{
                                     borderRadius: wp(8),
                                     shadowColor: '#000',
@@ -711,5 +798,11 @@ const styles = StyleSheet.create({
     sendButtonText: {
         color: COLORS.primary,
         fontWeight: 'bold',
+    },
+    replyComponent: {
+        backgroundColor: 'white',
+        padding: 10,
+        borderRadius: 10,
+        marginTop: 10,
     },
 });
