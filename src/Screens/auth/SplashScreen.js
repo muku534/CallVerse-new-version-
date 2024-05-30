@@ -19,7 +19,7 @@ const SplashScreen = ({ navigation }) => {
                 // If no user is signed in, navigate to 'Login'
                 navigation.replace('Welcome');
             }
-        }, 800);
+        }, 900);
 
         return () => clearTimeout(timer); // This will clear the timeout if the component is unmounted before the time ends
     }, []);

@@ -22,7 +22,10 @@ import firestore from '@react-native-firebase/firestore';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 
-const AddProfile = ({ navigation }) => {
+const AddProfile = ({ route, navigation }) => {
+    const randomNumber = route.params.randomNumber;
+    console.log(randomNumber);
+    const [userData, setUserData] = useState(null);
     const [showMenu, setShowMenu] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [viewProfileModalVisible, setViewProfileModalVisible] = useState(false);
@@ -30,7 +33,7 @@ const AddProfile = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [bio, setBio] = useState('');
     // const currentUserRandomNumber = '9649726428'; // replace this with the current user's random number
-    const [phoneNumber, setPhoneNumber] = useState(null);
+    const [phoneNumber, setPhoneNumber] = useState(randomNumber);
 
     useEffect(() => {
         const fetchData = async () => {
