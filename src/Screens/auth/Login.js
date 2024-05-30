@@ -25,128 +25,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
-    const [otp, setOtp] = useState('');
     const [loding, setLoding] = useState(false);
     const [linkLoading, setLinkLoading] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // const [showOtpInput, setShowOtpInput] = useState(false);
 
-
-    // const handleLogin = async () => {
-    //     setShowOtpInput((prv) => !prv);
-    // };
-
-    // const sendOtp = async () => {
-    //     setLoding(true);
-
-    //     try {
-    //         const userQuerySnapshot = await firestore().collection('Users')
-    //             .where('email', '==', email)
-    //             .get();
-
-    //         if (userQuerySnapshot.empty) {
-    //             Alert.alert('Error', 'This email does not exist.');
-    //             setLoding(false);
-    //             return;
-    //         }
-
-    //         const userData = userQuerySnapshot.docs[0].data();
-
-    //         // Store user data in AsyncStorage
-    //         await AsyncStorage.setItem('userData', JSON.stringify(userData));
-    //         console.log('User data stored in AsyncStorage:', userData);
-
-    //         // Request FCM permission and retrieve FCM token
-    //         await messaging().requestPermission();
-    //         const fcmToken = await messaging().getToken();
-    //         console.log('FCM Token:', fcmToken);
-
-    //         if (typeof fcmToken !== 'string' || !fcmToken) {
-    //             console.error('FCM token is not a string:', fcmToken);
-    //             setLoding(false);
-    //             return;
-    //         }
-
-    //         // Store FCM token in user data
-    //         userData.fcmToken = fcmToken;
-
-    //         // Update user data in Firestore with FCM token
-    //         await firestore().collection('Users').doc(String(userData.randomNumber)).update({
-    //             fcmToken: fcmToken,
-    //         });
-
-    //         console.log('FCM Token stored in user data:', userData);
-
-    //         const actionCodeSettings = {
-    //             url: 'https://callverse.com/Login?cartId=1234',
-    //             handleCodeInApp: true,
-    //             android: {
-    //                 packageName: 'com.callverse.android',
-    //                 installApp: true,
-    //                 minimumVersion: '12',
-    //             },
-    //             dynamicLinkDomain: 'callverse1.page.link',
-    //         };
-
-    //         // Send sign-in link to email
-    //         await auth().sendSignInLinkToEmail(email, actionCodeSettings);
-    //         await AsyncStorage.setItem('emailForSignIn', email);
-    //         Alert.alert('Success', 'Sign-in link sent to your email.');
-    //     } catch (error) {
-    //         console.log('Error sending sign-in link:', error);
-    //         Alert.alert('Something went wrong. Please try again.');
-    //     } finally {
-    //         setLoding(false);
-    //     }
-    // };
-
-
-    // useEffect(() => {
-
-    //     messaging().requestPermission()
-    //         .then(() => {
-    //             console.log('Notification permission granted.');
-    //         })
-    //         .catch(error => {
-    //             console.log('Notification permission not granted:', error);
-    //         });
-
-    //     // Listen for incoming messages
-    //     messaging().onMessage(async remoteMessage => {
-    //         console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    //         // Display a notification when a message is received
-    //         PushNotification.localNotification({
-    //             title: remoteMessage.notification.title,
-    //             message: remoteMessage.notification.body,
-    //         });
-    //     });
-
-    //     const handleDynamicLink = link => {
-    //         if (auth().isSignInWithEmailLink(link.url)) {
-    //             setLinkLoading(true);
-    //             AsyncStorage.getItem('emailForSignIn').then(email => {
-    //                 if (email) {
-    //                     auth().signInWithEmailLink(email, link.url).then(result => {
-    //                         console.log('User signed in with email link', result);
-    //                         navigation.navigate('TabStack');
-    //                     }).catch(error => {
-    //                         console.error('Error signing in with email link', error);
-    //                     });
-    //                 } else {
-    //                     console.error('Could not find email in local storage');
-    //                     setLinkLoading(false);
-    //                 }
-    //             });
-    //         }
-    //     };
-
-    //     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-
-    //     return () => unsubscribe();
-    // }, []);
-
-    const sendOtp = async () => {
+    const sendEmailLink = async () => {
         setLoading(true);
 
         try {
@@ -284,7 +168,7 @@ const Login = ({ navigation }) => {
                         )} */}
                         <Button
                             title="Login"
-                            onPress={sendOtp}
+                            onPress={sendEmailLink}
                             loding={loding || linkLoading}
                             style={styles.Button}
                         />

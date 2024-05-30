@@ -55,6 +55,14 @@ yarn-error.log
 # Bundle artifact
 *.jsbundle
 
+.env
+.env.local
+my-release-key.jks
+
+
+android/app/release
+android/app/google-services.json
+
 # Ruby / CocoaPods
 /ios/Pods/
 /vendor/bundle/

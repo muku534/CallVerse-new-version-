@@ -34,8 +34,9 @@ import EditProfile from './src/Screens/Home/EditProfile';
 import { COLORS } from './constants';
 import PersonalChats from './src/Screens/Home/PersonalChats';
 import VoiceCall from './src/Screens/Home/VoiceCall';
-// import { Provider } from 'react-redux';
-// import store from './src/Redux/Store';
+import { Provider } from 'react-redux';
+import store from './src/redux/store';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -122,24 +123,24 @@ function App() {
   };
 
   return (
-    // <Provider store={store}>
-    <SafeAreaProvider>
-      <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator initialRouteName={initialScreen}>
-          <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
-          <Stack.Screen name="TabStack" component={TabStack} options={{ headerShown: false }} />
-          <Stack.Screen name="AddProfile" component={AddProfile} options={{ headerShown: false }} />
-          <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
-          <Stack.Screen name="AddContact" component={AddContact} options={{ headerShown: true }} />
-          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-          <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="PersonalChats" component={PersonalChats} options={{ headerShown: false }} />
-          <Stack.Screen name="VoiceCall" component={VoiceCall} options={{ headerShown: false }} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
-    // </Provider>
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <NavigationContainer ref={navigationRef}>
+          <Stack.Navigator initialRouteName={initialScreen}>
+            <Stack.Screen name="SplashScreen" component={SplashScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
+            <Stack.Screen name="TabStack" component={TabStack} options={{ headerShown: false }} />
+            <Stack.Screen name="AddProfile" component={AddProfile} options={{ headerShown: false }} />
+            <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
+            <Stack.Screen name="AddContact" component={AddContact} options={{ headerShown: true }} />
+            <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+            <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="PersonalChats" component={PersonalChats} options={{ headerShown: false }} />
+            <Stack.Screen name="VoiceCall" component={VoiceCall} options={{ headerShown: false }} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </Provider>
   );
 }
 

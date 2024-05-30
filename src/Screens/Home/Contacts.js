@@ -19,25 +19,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
-// import { fetchContacts } from '../../Redux/Actions/Contacts';
-
-
-// const contacts = [
-//     { id: '1', name: 'John Doe', image: user1Image, message: 'Hey Honey' },
-//     { id: '2', name: 'Jane Doe', image: user2Image, message: 'Hey bro' },
-//     { id: '3', name: 'James Doe', image: user3Image, message: 'Hey' },
-//     { id: '4', name: 'Jasmine Doe', image: user4Image, message: 'Hey Buddy' },
-//     { id: '5', name: 'Jade Doe', image: user5Image, message: 'Hello' },
-//     { id: '6', name: 'Jack Doe', image: user6Image, message: '' },
-//     { id: '7', name: 'Jill Doe', image: user7Image, message: '' },
-
-// ];
+import { fetchContact } from '../../redux/action';
 
 
 const Contacts = ({ navigation }) => {
+    const dispatch = useDispatch();
     const [searchVisible, setSearchVisible] = useState(false);
     const [searchText, setSearchText] = useState('');
-    const [contacts, setContacts] = useState([]);
+    const contacts = useSelector(state => state.contacts)
     const [filteredChats, setFilteredChats] = useState(contacts);
     const [currentUserRandomNumber, setCurrenrUserRandomNumber] = useState(null); // replace this with the current user's random number
     const [refreshing, setRefreshing] = useState(false);
@@ -76,7 +65,7 @@ const Contacts = ({ navigation }) => {
         const doc = await contactsRef.get();
 
         if (doc.exists) {
-            setContacts(doc.data().contacts);
+            dispatch(fetchContact(doc.data().contacts));
             setFilteredChats(doc.data().contacts);
             console.log(doc.data().contacts); // Log the contacts
         }
